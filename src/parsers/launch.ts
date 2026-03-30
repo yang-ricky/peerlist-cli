@@ -99,6 +99,46 @@ export function parseLaunchProjectsFromHtml(
   return [...projects.values()];
 }
 
+export function isLaunchpadEmptyState(html: string): boolean {
+  const text = getLaunchpadPageText(html);
+
+  if (!text) {
+    return false;
+  }
+
+  const patterns = [
+    /become the first project to launch this week/i,
+    /\bno launches yet\b/i,
+    /\bno projects launched this week\b/i,
+    /\blaunch your project this week\b/i,
+  ];
+
+  return patterns.some((pattern) => pattern.test(text));
+}
+
+export function extractLaunchpadDisplayedWeek(html: string): number | null {
+  const text = getLaunchpadPageText(html);
+  if (!text) {
+    return null;
+  }
+
+  const match = text.match(/\bweek\b[^0-9]{0,5}(\d{1,2})\b/i);
+  if (!match?.[1]) {
+    return null;
+  }
+
+  return Number.parseInt(match[1], 10);
+}
+
+function getLaunchpadPageText(html: string): string {
+  const $ = cheerio.load(html);
+  const parts = [$("main").text(), $("title").text(), $.root().text()]
+    .map((value) => value.replace(/\s+/g, " ").trim())
+    .filter(Boolean);
+
+  return parts.join(" ");
+}
+
 function parseLaunchCandidate(
   candidate: Record<string, unknown>,
   context: LaunchParseContext,

@@ -21,6 +21,20 @@ describe("formatter", () => {
     expect(output).toContain("W14 2026");
   });
 
+  it("formats empty launch list state", () => {
+    const output = formatLaunchListTable([]);
+
+    expect(output).toContain("No Launchpad projects found for this week yet.");
+  });
+
+  it("formats empty launch list state for a range", () => {
+    const output = formatLaunchListTable([], {
+      emptyMessage: "No Launchpad projects found for the requested range yet.",
+    });
+
+    expect(output).toContain("No Launchpad projects found for the requested range yet.");
+  });
+
   it("formats project detail output", () => {
     const output = formatProjectDetail({
       ref: "yossisegev/launching-today",

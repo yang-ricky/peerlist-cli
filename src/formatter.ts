@@ -5,7 +5,16 @@ import { useColors } from "./output.js";
 
 const c = useColors() ? chalk : chalk;
 
-export function formatLaunchListTable(projects: LaunchProject[]): string {
+export function formatLaunchListTable(
+  projects: LaunchProject[],
+  options: {
+    emptyMessage?: string;
+  } = {},
+): string {
+  if (projects.length === 0) {
+    return options.emptyMessage ?? "No Launchpad projects found for this week yet.";
+  }
+
   const table = new Table({
     head: [c.bold("Name"), c.bold("Tagline"), c.bold("Week"), c.bold("Upvotes")],
     style: {

@@ -9,7 +9,9 @@ import type {
   ProjectRef,
 } from "../models/index.js";
 import {
+  extractLaunchpadDisplayedWeek,
   extractNextData,
+  isLaunchpadEmptyState,
   extractStructuredData,
   parseLaunchProjectsFromHtml,
   parseLaunchProjectsFromHydration,
@@ -20,7 +22,7 @@ import { parseProjectRef } from "../utils/project-ref.js";
 import { getUtcWeekInfo, resolveWeek } from "../utils/week.js";
 import type { Backend, BackendResult } from "./types.js";
 
-const SCHEMA_VERSION = "1";
+const SCHEMA_VERSION = "2";
 
 export class PeerlistBackend implements Backend {
   private lastRequestTime = 0;
@@ -80,6 +82,7 @@ export class PeerlistBackend implements Backend {
     for (const url of urls) {
       try {
         html = await this.fetchWithRetry(url);
+        this.assertRequestedWeekMatchesPage(html, resolvedWeek.year, resolvedWeek.week);
         break;
       } catch (error) {
         if (url === urls[urls.length - 1]) {
@@ -120,6 +123,22 @@ export class PeerlistBackend implements Backend {
     });
 
     if (launches.length === 0) {
+      if (isLaunchpadEmptyState(html)) {
+        const result: BackendResult<LaunchProject[]> = {
+          data: [],
+          dataSource: "html",
+          providerChain,
+          cacheHit: false,
+          degraded: true,
+          warnings: [
+            ...warnings,
+            `No Launchpad projects found for week ${resolvedWeek.week}, ${resolvedWeek.year}.`,
+          ],
+        };
+        this.cache.set(htmlKey, result, this.config.cacheTTL?.latest ?? DEFAULTS.cacheTTL.latest);
+        return result;
+      }
+
       throw new ParseError(
         `Failed to parse launch list for week ${resolvedWeek.week}, ${resolvedWeek.year}`,
       );
@@ -214,6 +233,22 @@ export class PeerlistBackend implements Backend {
     return isCurrentWeek
       ? [URLS.launchpadWeek(year, week), URLS.launchpad]
       : [URLS.launchpadWeek(year, week)];
+  }
+
+  private assertRequestedWeekMatchesPage(html: string, year: number, week: number): void {
+    const currentWeek = getUtcWeekInfo(new Date());
+    const isCurrentWeek = currentWeek.year === year && currentWeek.week === week;
+
+    if (isCurrentWeek) {
+      return;
+    }
+
+    const displayedWeek = extractLaunchpadDisplayedWeek(html);
+    if (displayedWeek !== null && displayedWeek !== week) {
+      throw new ParseError(
+        `Peerlist public Launchpad pages do not expose week ${week}, ${year} reliably; the requested page rendered week ${displayedWeek} instead.`,
+      );
+    }
   }
 
   private async fetchWithRetry(url: string): Promise<string> {

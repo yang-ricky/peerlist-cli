@@ -16,6 +16,11 @@ export interface ResolveWeekOptions {
   now?: Date;
 }
 
+export interface RecentRangeOptions {
+  anchor: YearWeek;
+  count: number;
+}
+
 export function getUtcWeekInfo(date: Date): YearWeek {
   const utcDate = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
   const dayOfWeek = utcDate.getUTCDay() || 7;
@@ -89,6 +94,59 @@ export function resolveWeek(options: ResolveWeekOptions): ResolvedYearWeek {
   };
 }
 
+export function getUtcDateForYearWeek(year: number, week: number): Date {
+  validateYearWeek(week, year);
+
+  const januaryFourth = new Date(Date.UTC(year, 0, 4));
+  const dayOfWeek = januaryFourth.getUTCDay() || 7;
+  const firstWeekMonday = new Date(januaryFourth);
+  firstWeekMonday.setUTCDate(januaryFourth.getUTCDate() - dayOfWeek + 1);
+
+  const result = new Date(firstWeekMonday);
+  result.setUTCDate(firstWeekMonday.getUTCDate() + (week - 1) * 7);
+
+  return result;
+}
+
+export function listRecentWeeks(options: RecentRangeOptions): YearWeek[] {
+  validateRangeCount(options.count, "weeks");
+
+  const startDate = getUtcDateForYearWeek(options.anchor.year, options.anchor.week);
+  const weeks: YearWeek[] = [];
+
+  for (let index = 0; index < options.count; index += 1) {
+    const current = new Date(startDate);
+    current.setUTCDate(startDate.getUTCDate() - index * 7);
+    weeks.push(getUtcWeekInfo(current));
+  }
+
+  return weeks;
+}
+
+export function listRecentMonths(options: RecentRangeOptions): YearWeek[] {
+  validateRangeCount(options.count, "months");
+
+  const anchorDate = getUtcDateForYearWeek(options.anchor.year, options.anchor.week);
+  const startBoundary = new Date(anchorDate);
+  startBoundary.setUTCMonth(startBoundary.getUTCMonth() - (options.count - 1), 1);
+  startBoundary.setUTCHours(0, 0, 0, 0);
+
+  const weeks: YearWeek[] = [];
+  const seen = new Set<string>();
+
+  for (let current = new Date(anchorDate); current >= startBoundary; current.setUTCDate(current.getUTCDate() - 7)) {
+    const weekInfo = getUtcWeekInfo(current);
+    const key = `${weekInfo.year}:${weekInfo.week}`;
+
+    if (!seen.has(key)) {
+      seen.add(key);
+      weeks.push(weekInfo);
+    }
+  }
+
+  return weeks;
+}
+
 function parseOptionalPositiveInteger(
   value: number | string | undefined,
   fieldName: string,
@@ -112,5 +170,11 @@ function validateYearWeek(week: number, year: number): void {
 
   if (year < 2000 || year > 9999) {
     throw new ArgumentError("year must be between 2000 and 9999");
+  }
+}
+
+function validateRangeCount(count: number, fieldName: string): void {
+  if (!Number.isInteger(count) || count < 1) {
+    throw new ArgumentError(`${fieldName} must be a positive integer`);
   }
 }

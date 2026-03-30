@@ -74,3 +74,8 @@ export interface ListOptions {
   week?: number;
   year?: number;
 }
+
+export interface YearWeek {
+  year: number;
+  week: number;
+}

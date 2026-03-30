@@ -4,6 +4,8 @@ export {
   extractStructuredData,
 } from "./hydration.js";
 export {
+  extractLaunchpadDisplayedWeek,
+  isLaunchpadEmptyState,
   parseLaunchProjectsFromHtml,
   parseLaunchProjectsFromHydration,
 } from "./launch.js";

@@ -2,7 +2,9 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
+  extractLaunchpadDisplayedWeek,
   extractNextData,
+  isLaunchpadEmptyState,
   parseLaunchProjectsFromHtml,
   parseLaunchProjectsFromHydration,
 } from "../../src/parsers/index.js";
@@ -34,5 +36,18 @@ describe("launch parser", () => {
       name: "Build Log",
       upvotes: 18,
     });
+  });
+
+  it("detects empty launchpad state", () => {
+    const html = readFileSync(join(fixturesDir, "launchpad-empty.html"), "utf-8");
+
+    expect(parseLaunchProjectsFromHtml(html, { week: 14, year: 2026 })).toEqual([]);
+    expect(isLaunchpadEmptyState(html)).toBe(true);
+  });
+
+  it("extracts the displayed week from launchpad html", () => {
+    const html = readFileSync(join(fixturesDir, "launchpad-empty.html"), "utf-8");
+
+    expect(extractLaunchpadDisplayedWeek(html)).toBe(14);
   });
 });
