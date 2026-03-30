@@ -1,7 +1,10 @@
 import { Command } from "commander";
-import { CLIError, ExitCode } from "../errors.js";
-import { getOutputFormat } from "../output.js";
-import { parseProjectRef } from "../utils/project-ref.js";
+import { PeerlistBackend } from "../backends/index.js";
+import { FileCache } from "../cache/index.js";
+import { loadConfig } from "../config.js";
+import { formatProjectDetail } from "../formatter.js";
+import { createOutput, getOutputFormat } from "../output.js";
+import { serialize } from "../serializer.js";
 import { handleCommandError } from "./common.js";
 
 export const projectCommand = new Command("project")
@@ -12,17 +15,25 @@ export const projectCommand = new Command("project")
   .option("-v, --verbose", "Verbose output")
   .action(async (ref: string, options) => {
     try {
-      parseProjectRef(ref);
+      const config = loadConfig();
+      const backend = new PeerlistBackend(new FileCache(config.cache.dir), {
+        delay: config.request.delay,
+        timeout: config.request.timeout,
+        retries: config.request.retries,
+        userAgent: config.request.userAgent,
+        cacheTTL: {
+          latest: config.cache.ttl.latest,
+          project: config.cache.ttl.project,
+        },
+      });
+      const result = await backend.getProject(ref);
+      const format = getOutputFormat(options);
 
-      if (getOutputFormat(options) === "table") {
-        console.log("`pl project` is not implemented yet.");
-        console.log("Next step: wire project detail parser + backend.");
+      if (format === "table") {
+        console.log(formatProjectDetail(result.data));
       } else {
-        throw new CLIError(
-          "`pl project` is not implemented yet",
-          ExitCode.GeneralError,
-          "not_implemented",
-        );
+        const output = createOutput(result.data, result);
+        console.log(serialize(output, format));
       }
     } catch (error) {
       handleCommandError(error, options);

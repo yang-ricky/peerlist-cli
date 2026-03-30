@@ -1,0 +1,78 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`project snapshots > matches project detail table snapshot 1`] = `
+"
+Launching Today
+A place to launch your next project
+
+Description:
+Launching Today helps builders launch projects and collect early feedback from the right audience.
+
+Website: https://www.launchingtoday.dev
+Peerlist: https://peerlist.io/yossisegev/project/launching-today
+Categories: Marketing, Productivity
+Built with: Next.js, Tailwind CSS
+Launched: Week 46 • 2024
+Metrics: 32 upvotes • 4 comments • 210 views"
+`;
+
+exports[`project snapshots > matches project json envelope snapshot 1`] = `
+{
+  "cacheHit": false,
+  "data": {
+    "benefits": [
+      "Reach makers fast",
+      "Get feedback in one place",
+    ],
+    "builtWith": [
+      "Next.js",
+      "Tailwind CSS",
+    ],
+    "categories": [
+      "Marketing",
+      "Productivity",
+    ],
+    "collaborators": [
+      {
+        "name": "Anna",
+        "profileUrl": "https://peerlist.io/anna",
+        "username": "anna",
+      },
+    ],
+    "comments": 4,
+    "coverImageUrl": undefined,
+    "description": "Launching Today helps builders launch projects and collect early feedback from the right audience.",
+    "keyFeatures": [
+      "Launch timeline",
+      "Launch checklist",
+    ],
+    "launchWeek": 46,
+    "launchYear": 2024,
+    "makerName": "Yossi Segev",
+    "makerUsername": "yossisegev",
+    "name": "Launching Today",
+    "projectSlug": "launching-today",
+    "ref": "yossisegev/launching-today",
+    "tagline": "A place to launch your next project",
+    "upvotes": 32,
+    "url": "https://peerlist.io/yossisegev/project/launching-today",
+    "useCases": [
+      "Weekly launches",
+      "Product validation",
+    ],
+    "username": "yossisegev",
+    "views": 210,
+    "websiteUrl": "https://www.launchingtoday.dev",
+  },
+  "dataSource": "hydration",
+  "degraded": false,
+  "error": null,
+  "fetchedAt": "<redacted>",
+  "ok": true,
+  "providerChain": [
+    "hydration",
+  ],
+  "schemaVersion": "1",
+  "warnings": [],
+}
+`;

@@ -1,7 +1,10 @@
 import { Command } from "commander";
-import { CLIError, ExitCode } from "../errors.js";
-import { getOutputFormat } from "../output.js";
-import { resolveWeek } from "../utils/week.js";
+import { PeerlistBackend } from "../backends/index.js";
+import { FileCache } from "../cache/index.js";
+import { loadConfig } from "../config.js";
+import { formatLaunchListTable } from "../formatter.js";
+import { createOutput, getOutputFormat } from "../output.js";
+import { serialize } from "../serializer.js";
 import { handleCommandError, parsePositiveInteger } from "./common.js";
 
 export const latestCommand = new Command("latest")
@@ -14,21 +17,28 @@ export const latestCommand = new Command("latest")
   .option("-v, --verbose", "Verbose output")
   .action(async (options) => {
     try {
-      parsePositiveInteger(options.limit, "limit");
-      resolveWeek({
-        week: options.week,
-        year: options.year,
+      const config = loadConfig();
+      const backend = new PeerlistBackend(new FileCache(config.cache.dir), {
+        delay: config.request.delay,
+        timeout: config.request.timeout,
+        retries: config.request.retries,
+        userAgent: config.request.userAgent,
+        cacheTTL: {
+          latest: config.cache.ttl.latest,
+          project: config.cache.ttl.project,
+        },
       });
+      const limit = parsePositiveInteger(options.limit, "limit");
+      const week = options.week ? parsePositiveInteger(options.week, "week") : undefined;
+      const year = options.year ? parsePositiveInteger(options.year, "year") : undefined;
+      const result = await backend.getLatest({ limit, week, year });
+      const format = getOutputFormat(options);
 
-      if (getOutputFormat(options) === "table") {
-        console.log("`pl latest` is not implemented yet.");
-        console.log("Next step: wire parser + backend for Launchpad week pages.");
+      if (format === "table") {
+        console.log(formatLaunchListTable(result.data));
       } else {
-        throw new CLIError(
-          "`pl latest` is not implemented yet",
-          ExitCode.GeneralError,
-          "not_implemented",
-        );
+        const output = createOutput(result.data, result);
+        console.log(serialize(output, format));
       }
     } catch (error) {
       handleCommandError(error, options);

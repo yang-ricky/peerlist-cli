@@ -1,0 +1,74 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`latest snapshots > matches latest json envelope snapshot 1`] = `
+{
+  "cacheHit": false,
+  "data": [
+    {
+      "categories": [
+        "Marketing",
+        "Productivity",
+      ],
+      "comments": 1,
+      "coverImageUrl": undefined,
+      "isFeatured": false,
+      "isStaffPick": false,
+      "launchWeek": 14,
+      "launchYear": 2026,
+      "name": "Launching Today",
+      "position": undefined,
+      "projectSlug": "launching-today",
+      "ref": "yossisegev/launching-today",
+      "score": undefined,
+      "tagline": "A place to launch your next project",
+      "upvotes": 22,
+      "url": "https://peerlist.io/yossisegev/project/launching-today",
+      "username": "yossisegev",
+      "views": 120,
+      "websiteUrl": undefined,
+    },
+    {
+      "categories": [
+        "Developer Tools",
+      ],
+      "comments": 3,
+      "coverImageUrl": undefined,
+      "isFeatured": false,
+      "isStaffPick": false,
+      "launchWeek": 14,
+      "launchYear": 2026,
+      "name": "Build Log",
+      "position": undefined,
+      "projectSlug": "build-log",
+      "ref": "sara/build-log",
+      "score": undefined,
+      "tagline": "Share your progress with other builders",
+      "upvotes": 18,
+      "url": "https://peerlist.io/sara/project/build-log",
+      "username": "sara",
+      "views": 77,
+      "websiteUrl": undefined,
+    },
+  ],
+  "dataSource": "hydration",
+  "degraded": false,
+  "error": null,
+  "fetchedAt": "<redacted>",
+  "ok": true,
+  "providerChain": [
+    "hydration",
+  ],
+  "schemaVersion": "1",
+  "warnings": [],
+}
+`;
+
+exports[`latest snapshots > matches launch list table snapshot 1`] = `
+"┌────────────────────────┬────────────────────────────────────────────┬────────────┬──────────┐
+│ Name                   │ Tagline                                    │ Week       │ Upvotes  │
+├────────────────────────┼────────────────────────────────────────────┼────────────┼──────────┤
+│ Launching Today        │ A place to launch your next project        │ W14 2026   │ 22       │
+├────────────────────────┼────────────────────────────────────────────┼────────────┼──────────┤
+│ Build Log              │ Share your progress with other builders    │ W14 2026   │ 18       │
+└────────────────────────┴────────────────────────────────────────────┴────────────┴──────────┘"
+`;

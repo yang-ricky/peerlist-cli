@@ -1,0 +1,29 @@
+{
+  "ref": "yossisegev/launching-today",
+  "username": "yossisegev",
+  "projectSlug": "launching-today",
+  "url": "https://peerlist.io/yossisegev/project/launching-today",
+  "name": "Launching Today",
+  "tagline": "A place to launch your next project",
+  "description": "Launching Today helps builders launch projects and collect early feedback from the right audience.",
+  "websiteUrl": "https://www.launchingtoday.dev",
+  "categories": ["Marketing", "Productivity"],
+  "launchWeek": 46,
+  "launchYear": 2024,
+  "upvotes": 32,
+  "comments": 4,
+  "views": 210,
+  "builtWith": ["Next.js", "Tailwind CSS"],
+  "benefits": ["Reach makers fast", "Get feedback in one place"],
+  "keyFeatures": ["Launch timeline", "Launch checklist"],
+  "useCases": ["Weekly launches", "Product validation"],
+  "makerName": "Yossi Segev",
+  "makerUsername": "yossisegev",
+  "collaborators": [
+    {
+      "name": "Anna",
+      "username": "anna",
+      "profileUrl": "https://peerlist.io/anna"
+    }
+  ]
+}
