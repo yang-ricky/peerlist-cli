@@ -26,6 +26,9 @@ Thumbs.db
 *.log
 npm-debug.log*
 
+todolist.md
+design.md
+
 # Local CLI cache directory (user home)
 # ~/.peerlist-cli/ is the default cache location
 # This gitignore is for the repo, not user home
